@@ -7,6 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // PostgreSQL Connection Setup (Neon / Cloud DB)
+// Using process.env.DATABASE_URL with SSL configured for cloud hosting
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -14,7 +15,10 @@ const pool = new Pool({
 
 // Middleware
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
+
+// Serve static assets from project root & public directory
+app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================================
 // 1. GET ALL STOCK VIEW ITEMS
@@ -190,13 +194,23 @@ app.delete('/api/stock/:it_code/:item_size', async (req, res) => {
 });
 
 // ==========================================================
-// 4. FALLBACK ROUTE (EXPRESS 5 / PATH-TO-REGEXP v8+ COMPATIBLE)
+// 4. FALLBACK & ROOT ROUTE FOR FRONTEND (INDEX.HTML)
 // ==========================================================
-app.get('/*splat', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+// Wildcard catch-all for SPA routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
+
+// Start Server locally if not running serverless
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}
+
+// Export app for Vercel Serverless Function deployment
+module.exports = app;
