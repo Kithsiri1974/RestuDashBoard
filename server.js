@@ -207,8 +207,8 @@ app.delete('/api/stock/:it_code/:item_size', async (req, res) => {
 // ==========================================================
 app.get('/', serveIndexHtml);
 
-// Catch-all route for frontend Single Page Application navigation
-app.get('*', serveIndexHtml);
+// RegExp literal catch-all safe for path-to-regexp v6+
+app.get(/(.*)/, serveIndexHtml);
 
 // Start server locally if not executing as a serverless function
 if (process.env.NODE_ENV !== 'production') {
