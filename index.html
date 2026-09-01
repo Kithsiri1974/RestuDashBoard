@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STOCK_MAST CONTROL</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="main-app-container">
+        <div class="app-title-header">STOCK_MAST CONTROL</div>
+
+        <div class="workspace-area">
+            
+            <!-- Top Controls Header with Dynamic Type & Category Dropdowns -->
+            <div class="top-controls-bar">
+                <div class="control-item">
+                    <span>ITEM TYPE:</span>
+                    <select id="itemTypeSelect" class="combo-select">
+                        <option value="">All Types</option>
+                    </select>
+                </div>
+                
+                <div class="control-item">
+                    <span>ITEM CATEGORY:</span>
+                    <select id="itemCatSelect" class="combo-select">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="content-split-panel">
+
+                <!-- LEFT PANEL: Table View & Search -->
+                <div class="table-box-container">
+                    <div class="box-subheading">View Database Details</div>
+                    <div class="banner-title">stock mast</div>
+
+                    <!-- Search Bar (Item Code + Size) -->
+                    <div class="search-bar-container">
+                        <input type="text" id="searchInput" placeholder="Search by Code + Size (e.g., 101 LARGE)..." oninput="filterStockItems()">
+                        <button type="button" class="btn-text-action" onclick="clearSearch()">[Clear Filters]</button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Item Code</th>
+                                    <th>Description</th>
+                                    <th>Cat</th>
+                                    <th>Size</th>
+                                    <th>Unit</th>
+                                    <th>Qty Hand</th>
+                                    <th>Pur. Price</th>
+                                    <th>Sale Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableData">
+                                <!-- Dynamic rows loaded via script.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- RIGHT PANEL: Details Form -->
+                <div class="form-box-container">
+                    <div class="form-instruction">Select or edit item details below:</div>
+
+                    <form id="detailsForm">
+                        <!-- Hidden inputs to track original primary key identity -->
+                        <input type="hidden" id="selectItCode">
+                        <input type="hidden" id="selectItSize">
+
+                        <div class="form-grid">
+
+                            <!-- Item Code & Description -->
+                            <div class="form-row">
+                                <label for="inpCode">Item Code (it_code)</label>
+                                <input type="text" id="inpCode" required>
+                            </div>
+
+                            <div class="form-row">
+                                <label for="inpDesc">Description (it_desc)</label>
+                                <input type="text" id="inpDesc">
+                            </div>
+
+                            <!-- Category & Size -->
+                            <div class="form-row">
+                                <label for="inpCat">Category (item_cat)</label>
+                                <input type="text" id="inpCat">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="inpSize">Size (item_size)</label>
+                                <input type="text" id="inpSize">
+                            </div>
+
+                            <!-- Unit & Type -->
+                            <div class="form-row">
+                                <label for="inpUnit">Unit (it_unit)</label>
+                                <input type="text" id="inpUnit">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="inpType">Item Type (item_type)</label>
+                                <input type="text" id="inpType">
+                            </div>
+
+                            <!-- Stock in Hand & Reorder Level -->
+                            <div class="form-row">
+                                <label for="inpQty">Stock in Hand (stock_in_hnd)</label>
+                                <input type="number" step="any" id="inpQty">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="inpReorder">Reorder Level (reorderlevel)</label>
+                                <input type="number" step="any" id="inpReorder">
+                            </div>
+
+                            <!-- Open Stock & Forward Qty -->
+                            <div class="form-row">
+                                <label for="inpOpenStock">Open Stock (open_stock)</label>
+                                <input type="number" step="any" id="inpOpenStock">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="inpFowdQty">Forward Qty (fowd_qty)</label>
+                                <input type="text" id="inpFowdQty">
+                            </div>
+
+                            <!-- Day Open Bal & Day Close Bal -->
+                            <div class="form-row">
+                                <label for="inpDayOpenBal">Day Open Bal (dayopenbal)</label>
+                                <input type="number" step="any" id="inpDayOpenBal">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="inpDayCloseBal">Day Close Bal (dayclosebal)</label>
+                                <input type="number" step="any" id="inpDayCloseBal">
+                            </div>
+
+                            <!-- Purchase Price & Sale Price -->
+                            <div class="form-row">
+                                <label for="inpPurPrice">Purchase Price (it_uprise_pur)</label>
+                                <input type="number" step="0.01" id="inpPurPrice">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="inpSalPrice">Sale Price (it_uprise_sal)</label>
+                                <input type="number" step="0.01" id="inpSalPrice">
+                            </div>
+
+                            <!-- Open Stock Date & Process Date -->
+                            <div class="form-row">
+                                <label for="inpOpenStockDate">Open Stock Date</label>
+                                <input type="datetime-local" id="inpOpenStockDate">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="inpProcesDate">Process Date</label>
+                                <input type="datetime-local" id="inpProcesDate">
+                            </div>
+
+                            <!-- Last Purchase Date & Rack No -->
+                            <div class="form-row">
+                                <label for="inpLastPurchDate">Last Purchase Date</label>
+                                <input type="date" id="inpLastPurchDate">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="inpRack">Rack No (rack_no)</label>
+                                <input type="text" id="inpRack">
+                            </div>
+
+                            <!-- User Name & Soft Drink / Beer -->
+                            <div class="form-row">
+                                <label for="inpUser">User Name (user_name)</label>
+                                <input type="text" id="inpUser">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="inpSoftDrBeer">Soft Drink / Beer (softdrbeer)</label>
+                                <input type="text" id="inpSoftDrBeer">
+                            </div>
+
+                            <!-- Map Item Code & TD Special -->
+                            <div class="form-row">
+                                <label for="inpMapItCode">Map Item Code (mapit_code)</label>
+                                <input type="text" id="inpMapItCode">
+                            </div>
+
+                            <div class="form-row">
+                                <label for="inpTdSpecial">TD Special (td_special)</label>
+                                <input type="text" id="inpTdSpecial">
+                            </div>
+
+                            <!-- Picture Link -->
+                            <div class="form-row full-width">
+                                <label for="inpPicLink">Picture Link (pic_link)</label>
+                                <input type="text" id="inpPicLink">
+                            </div>
+
+                            <!-- Remarks -->
+                            <div class="form-row full-width">
+                                <label for="inpRemarks">Remarks (remarks)</label>
+                                <textarea id="inpRemarks" rows="2"></textarea>
+                            </div>
+
+                        </div>
+
+                        <!-- Form Action Buttons -->
+                        <div class="form-bottom-actions">
+                            <button type="submit" class="btn-text-action">[Save All Changes]</button>
+                            <button type="button" id="cancelBtn" class="btn-text-action">[Cancel]</button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
