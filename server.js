@@ -16,9 +16,18 @@ const pool = new Pool({
 // Middleware
 app.use(express.json());
 
-// Serve static assets from project root & public directory
+// Serve static assets from project root and public directory
 app.use(express.static(path.join(__dirname)));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Helper function to serve index.html (fallback between root and public folder)
+const serveIndexHtml = (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'), (err) => {
+        if (err) {
+            res.sendFile(path.join(__dirname, 'public', 'index.html'));
+        }
+    });
+};
 
 // ==========================================================
 // 1. GET ALL STOCK VIEW ITEMS
@@ -194,23 +203,19 @@ app.delete('/api/stock/:it_code/:item_size', async (req, res) => {
 });
 
 // ==========================================================
-// 4. FALLBACK & ROOT ROUTE FOR FRONTEND (INDEX.HTML)
+// 4. FRONTEND ROUTES (ROOT & SPA CATCH-ALL)
 // ==========================================================
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+app.get('/', serveIndexHtml);
 
-// Wildcard catch-all for SPA routes
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+// Catch-all route for frontend Single Page Application navigation
+app.get('*', serveIndexHtml);
 
-// Start Server locally if not running serverless
+// Start server locally if not executing as a serverless function
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
         console.log(`Server running on http://localhost:${PORT}`);
     });
 }
 
-// Export app for Vercel Serverless Function deployment
+// Export Express app for Vercel Serverless Function engine
 module.exports = app;
